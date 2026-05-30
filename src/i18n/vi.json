@@ -1,0 +1,12 @@
+{
+  "brandName": "TRADING VIEW",
+  "lastPrice": "Giá gần nhất",
+  "change24h": "Thay đổi 24h",
+  "high24h": "Giá cao 24h",
+  "low24h": "Giá thấp 24h",
+  "vol24h": "Khối lượng 24h",
+  "marketWs": "Kết nối Bảng điện",
+  "chartWs": "Kết nối Biểu đồ",
+  "loading": "Đang tải dữ liệu thị trường...",
+  "interval": "Khung thời gian:"
+}

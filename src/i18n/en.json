@@ -1,0 +1,12 @@
+{
+  "brandName": "TRADING VIEW",
+  "lastPrice": "Last Price",
+  "change24h": "24h Change",
+  "high24h": "24h High",
+  "low24h": "24h Low",
+  "vol24h": "24h Volume",
+  "marketWs": "Market WS",
+  "chartWs": "Chart WS",
+  "loading": "Loading active market ticker...",
+  "interval": "Interval:"
+}
