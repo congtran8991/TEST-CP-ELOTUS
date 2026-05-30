@@ -6,4 +6,3 @@ import './orchestrators';
 export { getStore } from './store';
 export * from './store';
 export * from './actions';
-export type { AppState } from './store';

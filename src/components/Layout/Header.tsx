@@ -2,7 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import getStore from '../../store/store'; // Đảm bảo import đúng action changeLanguage từ store của bạn
 import { dictionary } from '../../i18n';
-import { changeLanguage } from '../../store';
+import { changeLanguageAction } from '../../store';
 
 export const Header: React.FC = observer(() => {
   const store = getStore();
@@ -94,7 +94,7 @@ export const Header: React.FC = observer(() => {
           border: '1px solid rgba(255, 255, 255, 0.05)'
         }}>
           <button
-            onClick={() => changeLanguage('vi')}
+            onClick={() => changeLanguageAction('vi')}
             style={{
               padding: '4px 10px',
               fontSize: '11px',
@@ -110,7 +110,7 @@ export const Header: React.FC = observer(() => {
             VI
           </button>
           <button
-            onClick={() => changeLanguage('en')}
+            onClick={() => changeLanguageAction('en')}
             style={{
               padding: '4px 10px',
               fontSize: '11px',

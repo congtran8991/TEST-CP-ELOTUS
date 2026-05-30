@@ -1,14 +1,20 @@
 import { createStore } from 'satcheljs';
-import type { Language } from '../i18n';
+import type { AppState, TickerInfo } from '../constants/types';
 
-export interface AppState {
-  currentLanguage: Language;
-}
 
 // Initial State definition
 const initialState: AppState = {
-  currentLanguage: 'vi'
+  currentLanguage: 'vi',
+  tickers: new Map<string, TickerInfo>(),
+  selectedSymbol: 'BTCUSDT',
+  selectedInterval: '15m',
+  searchQuery: '',
+  activeTab: 'USDT',
+  wsStatus: 'disconnected',
+  klineWsStatus: 'disconnected'
 };
+
+
 
 // Create and export the store
 export const getStore = createStore<AppState>('AppStore', initialState);
