@@ -1,5 +1,5 @@
 import { orchestrator } from 'satcheljs';
-import { initializeApplicationAction, setHistoricalKlinesAction, setKlineConnectionStatusAction, setSelectedIntervalAction, setSelectedSymbolAction, setTickersAction, updateKlineAction, updateOrderBookAction, updateTickersAction } from './actions';
+import { initializeApplicationAction, setConnectionStatusAction, setHistoricalKlinesAction, setKlineConnectionStatusAction, setSelectedIntervalAction, setSelectedSymbolAction, setTickersAction, updateKlineAction, updateOrderBookAction, updateTickersAction } from './actions';
 import getStore from './store';
 import { fetchHistoricalKlines, fetchInitialTickers, WS_BASE } from '../services';
 import type { KlineData, OrderBookItem, TickerInfo } from '../constants/types';
@@ -30,15 +30,19 @@ function startTickerStream() {
 
   stopTickerStream();
 
+  setConnectionStatusAction('connecting');
+
   // Connect to Binance All Market Mini Ticker WebSocket stream
   tickerWs = new WebSocket(`${WS_BASE}/!miniTicker@arr`);
 
   tickerWs.onopen = () => {
+    setConnectionStatusAction('connected');
     console.log('[WS] Global Tickers Connected');
   };
 
   tickerWs.onmessage = (event) => {
     try {
+      setConnectionStatusAction('connected');
       const data = JSON.parse(event.data);
 
       if (!Array.isArray(data)) return;
@@ -70,21 +74,23 @@ function startTickerStream() {
         tickerBufferMap.set(symbol, ticker);
       });
     } catch (err) {
+      setConnectionStatusAction('disconnected');
       console.error('[WS Tickers] Error parsing message', err);
     }
   };
 
   tickerWs.onclose = () => {
+    setConnectionStatusAction('disconnected');
     console.log('[WS] Global Tickers Closed');
   };
 
   tickerWs.onerror = (error) => {
+    setConnectionStatusAction('disconnected');
     console.error('[WS Tickers] Error:', error);
   };
 
   // Set up Throttling Dispatcher (Dispatches batched ticker updates every 400ms to avoid clogging React)
   tickerIntervalId = setInterval(() => {
-    console.log(tickerBufferMap.size, "tickerBufferMapsize")
     if (tickerBufferMap.size > 0) {
       const updates = Array.from(tickerBufferMap.values());
       updateTickersAction(updates);
@@ -116,7 +122,7 @@ function startKlineStream(symbol: string, interval: string) {
   klineWs.onmessage = (event) => {
     try {
       const data = JSON.parse(event.data);
-      console.log(data, "datadatadatadatadata")
+
       if (!data || !data.k) return;
 
       const k = data.k;
@@ -133,6 +139,7 @@ function startKlineStream(symbol: string, interval: string) {
       // (no rendering bottleneck since lightweight-charts handles single ticks very efficiently)
       updateKlineAction(kline);
     } catch (err) {
+      setKlineConnectionStatusAction('disconnected');
       console.error('[WS Kline] Error parsing message', err);
     }
   };
@@ -214,7 +221,6 @@ orchestrator(initializeApplicationAction, async () => {
 });
 
 orchestrator(setSelectedSymbolAction, async (actionMessage) => {
-  console.log(actionMessage, "actionMessage")
   const store = getStore();
   const symbol = actionMessage.symbol;
   const interval = store.selectedInterval;

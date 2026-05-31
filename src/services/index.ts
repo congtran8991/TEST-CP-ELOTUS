@@ -8,7 +8,7 @@ export async function fetchInitialTickers(): Promise<TickerInfo[]> {
   try {
     console.log('[REST] Fetching initial 24h ticker info...');
     const response = await fetch(`${REST_BASE}/ticker/24hr`);
-    console.log('[REST] 24h ticker info response', response);
+
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
 
