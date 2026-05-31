@@ -1,5 +1,6 @@
 {
   "brandName": "TRADING VIEW",
+  "binanceSpot": "Binance Spot",
   "lastPrice": "Giá gần nhất",
   "change24h": "Thay đổi 24h",
   "high24h": "Giá cao 24h",
@@ -8,5 +9,9 @@
   "marketWs": "Kết nối Bảng điện",
   "chartWs": "Kết nối Biểu đồ",
   "loading": "Đang tải dữ liệu thị trường...",
-  "interval": "Khung thời gian:"
+  "interval": "Khung thời gian:",
+  "volShort": "Khối lượng",
+  "searchPlaceholder": "Tìm kiếm thị trường...",
+  "tabAll": "TẤT CẢ",
+  "noMarkets": "Không tìm thấy thị trường nào"
 }

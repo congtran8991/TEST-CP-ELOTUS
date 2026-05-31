@@ -1,5 +1,6 @@
 {
   "brandName": "TRADING VIEW",
+  "binanceSpot": "Binance Spot",
   "lastPrice": "Last Price",
   "change24h": "24h Change",
   "high24h": "24h High",
@@ -8,5 +9,9 @@
   "marketWs": "Market WS",
   "chartWs": "Chart WS",
   "loading": "Loading active market ticker...",
-  "interval": "Interval:"
+  "interval": "Interval:",
+  "volShort": "Vol",
+  "searchPlaceholder": "Search markets...",
+  "tabAll": "ALL",
+  "noMarkets": "No markets found"
 }

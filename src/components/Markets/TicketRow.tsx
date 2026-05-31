@@ -1,5 +1,7 @@
+import React from 'react';
 import { observer } from 'mobx-react';
 import getStore from '../../store/store';
+import { dictionary } from '../../i18n';
 
 interface TickerRowProps {
   symbol: string;
@@ -7,15 +9,18 @@ interface TickerRowProps {
   onClick: () => void;
 }
 
-const TickerRow = observer(({ symbol, active, onClick }: TickerRowProps) => {
+export const TickerRow = observer(({ symbol, active, onClick }: TickerRowProps) => {
   const store = getStore();
   const ticker = store.tickers.get(symbol);
+
+  // Đọc từ điển ngôn ngữ động ('en' hoặc 'vi') từ tệp JSON
+  const t = dictionary[store.currentLanguage];
 
   if (!ticker) return null;
 
   const isPositive = parseFloat(ticker.priceChangePercent) >= 0;
 
-  // Decide flash classes
+  // Quyết định hiệu ứng nhấp nháy màu khi giá nhảy
   let flashClass = '';
   if (ticker.changeDirection === 'up') {
     flashClass = 'flash-up';
@@ -23,7 +28,7 @@ const TickerRow = observer(({ symbol, active, onClick }: TickerRowProps) => {
     flashClass = 'flash-down';
   }
 
-  // Format price based on size
+  // Hàm định dạng hiển thị giá tiền
   const formatPrice = (pStr: string) => {
     const p = parseFloat(pStr);
     if (p >= 1) return p.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -31,6 +36,7 @@ const TickerRow = observer(({ symbol, active, onClick }: TickerRowProps) => {
     return p.toFixed(6);
   };
 
+  // Định dạng lại tên coin (Ví dụ: BTCUSDT thành BTC/USDT)
   const displaySymbol = symbol.replace(/(USDT|BTC|ETH)$/, '/$1');
 
   return (
@@ -56,15 +62,17 @@ const TickerRow = observer(({ symbol, active, onClick }: TickerRowProps) => {
         if (!active) e.currentTarget.style.backgroundColor = 'transparent';
       }}
     >
+      {/* Cột Tên Coin và Khối lượng (Khối lượng dùng chữ dịch động "Vol") */}
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <span style={{ fontWeight: 600, fontSize: '13.5px', color: active ? '#fff' : 'var(--color-text-primary)' }}>
           {displaySymbol}
         </span>
         <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)' }}>
-          Vol {parseFloat(ticker.volume).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+          {t.volShort || 'Vol'} {parseFloat(ticker.volume).toLocaleString(undefined, { maximumFractionDigits: 0 })}
         </span>
       </div>
 
+      {/* Cột Giá hiện tại và % Thay đổi */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontFamily: 'var(--font-mono)' }}>
         <span style={{ fontSize: '13px', fontWeight: 600, color: '#fff' }}>
           {formatPrice(ticker.price)}

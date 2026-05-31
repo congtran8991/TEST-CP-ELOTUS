@@ -1,29 +1,29 @@
 import React, { useMemo } from 'react';
 import { observer } from 'mobx-react';
-import TickerRow from './TicketRow';
+import TickerRow from './TicketRow'; // Sửa lại chữ TicketRow thành TickerRow cho đúng tên file bạn vừa tạo
 import { setSearchQueryAction, setActiveTabAction, getStore, setSelectedSymbolAction } from '../../store';
+import { dictionary } from '../../i18n';
 
 export const Markets: React.FC = observer(() => {
   const store = getStore();
 
-  // Memoize filtering for performance
+  // Đọc từ điển ngôn ngữ động ('en' hoặc 'vi') từ tệp JSON
+  const t = dictionary[store.currentLanguage];
+
+  // Giữ nguyên logic Memoize filtering & sorting phục vụ hiệu năng
   const filteredSymbols = useMemo(() => {
     const list: string[] = [];
     const query = store.searchQuery.toUpperCase().replace('/', '');
     const tab = store.activeTab;
 
     store.tickers.forEach((_, symbol) => {
-      // Tab filter
       if (tab === 'USDT' && !symbol.endsWith('USDT')) return;
       if (tab === 'BTC' && !symbol.endsWith('BTC')) return;
-
-      // Search filter
       if (query && !symbol.includes(query)) return;
 
       list.push(symbol);
     });
 
-    // Sort primarily by volume descending
     return list.sort((a, b) => {
       const volA = parseFloat(store.tickers.get(a)?.quoteVolume || '0');
       const volB = parseFloat(store.tickers.get(b)?.quoteVolume || '0');
@@ -31,16 +31,15 @@ export const Markets: React.FC = observer(() => {
     });
   }, [store.tickers, store.searchQuery, store.activeTab]);
 
-
   return (
     <div className="sidebar-area">
-      {/* Search Input Box */}
+      {/* Search Input Box - Đa ngôn ngữ phần Placeholder */}
       <div style={{ padding: '12px' }}>
         <div style={{ position: 'relative' }}>
           <input
             type="text"
             className="custom-input"
-            placeholder="Search markets..."
+            placeholder={t.searchPlaceholder || "Search markets..."}
             value={store.searchQuery}
             onChange={(e) => setSearchQueryAction(e.target.value)}
             style={{ width: '100%', paddingLeft: '12px' }}
@@ -48,7 +47,7 @@ export const Markets: React.FC = observer(() => {
         </div>
       </div>
 
-      {/* Tabs */}
+      {/* Tabs danh mục thị trường */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', padding: '0 12px 12px 12px', gap: '6px' }}>
         {(['USDT', 'BTC', 'ALL'] as const).map((tab) => (
           <button
@@ -57,12 +56,13 @@ export const Markets: React.FC = observer(() => {
             onClick={() => setActiveTabAction(tab)}
             style={{ padding: '6px 0', fontSize: '12px', borderRadius: '6px' }}
           >
-            {tab}
+            {/* Nếu tab là 'ALL', dịch thành 'Tất cả' hoặc 'All' tùy ngôn ngữ */}
+            {tab === 'ALL' ? (t.tabAll || 'ALL') : tab}
           </button>
         ))}
       </div>
 
-      {/* Ticker List Container */}
+      {/* Ticker List Container - Đa ngôn ngữ phần trạng thái trống */}
       <div style={{ flex: 1, overflowY: 'auto' }}>
         {filteredSymbols.length > 0 ? (
           filteredSymbols.map((symbol) => (
@@ -75,7 +75,7 @@ export const Markets: React.FC = observer(() => {
           ))
         ) : (
           <div style={{ padding: '30px', textAlign: 'center', color: 'var(--color-text-muted)', fontSize: '13px' }}>
-            No markets found
+            {t.noMarkets || "No markets found"}
           </div>
         )}
       </div>
