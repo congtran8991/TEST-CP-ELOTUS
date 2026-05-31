@@ -72,6 +72,7 @@ Ensure you have **Node.js (v18+)** and **Yarn** installed.
 ### 1. Clone & Navigate
 ```bash
 git clone https://github.com/congtran8991/TEST-CP-ELOTUS.git
+git checkout main
 cd TEST-CP-ELOTUS
 ```
 
