@@ -13,5 +13,6 @@
   "volShort": "Vol",
   "searchPlaceholder": "Search markets...",
   "tabAll": "ALL",
-  "noMarkets": "No markets found"
+  "noMarkets": "No markets found",
+  "liveFeeds": "Live Feeds"
 }
