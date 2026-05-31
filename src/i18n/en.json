@@ -14,5 +14,13 @@
   "searchPlaceholder": "Search markets...",
   "tabAll": "ALL",
   "noMarkets": "No markets found",
-  "liveFeeds": "Live Feeds"
+  "liveFeeds": "Live Feeds",
+  "spread": "Spread",
+  "price": "Price",
+  "size": "Size",
+  "total": "Total",
+  "orderBookTitle": "Order Book",
+  "depth": "Depth",
+  "waitingAsks": "Waiting for order book asks...",
+  "waitingBids": "Waiting for order book bids..."
 }

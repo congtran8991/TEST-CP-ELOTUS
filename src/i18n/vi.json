@@ -14,5 +14,13 @@
   "searchPlaceholder": "Tìm kiếm thị trường...",
   "tabAll": "TẤT CẢ",
   "noMarkets": "Không tìm thấy thị trường nào",
-  "liveFeeds": "Dữ liệu trực tiếp"
+  "liveFeeds": "Dữ liệu trực tiếp",
+  "spread": "Độ chênh lệch",
+  "price": "Giá",
+  "size": "Số lượng",
+  "total": "Tổng",
+  "orderBookTitle": "Sổ lệnh",
+  "depth": "Độ sâu",
+  "waitingAsks": "Đang chờ dữ liệu lệnh bán...",
+  "waitingBids": "Đang chờ dữ liệu lệnh mua..."
 }

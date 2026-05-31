@@ -4,9 +4,13 @@ import getStore from '../../store/store';
 import OrderBookHeader from './OrderBookHeader';
 import OrderBookRow from './OrderBookRow';
 import MidMarketPrice from './MidMaketPrice';
+import { dictionary } from '../../i18n';
 
 export const OrderBook: React.FC = observer(() => {
   const store = getStore();
+
+  // Đọc từ điển ngôn ngữ động ('en' hoặc 'vi') từ hệ thống i18n
+  const t = dictionary[store.currentLanguage];
 
   const displayLimit = 10;
   const slicedBids = store.orderBook.bids.slice(0, displayLimit);
@@ -19,7 +23,7 @@ export const OrderBook: React.FC = observer(() => {
 
   return (
     <div className="orderbook-area">
-      {/* Title */}
+      {/* Tiêu đề vùng Sổ lệnh */}
       <div style={{
         padding: '14px 16px',
         borderBottom: '1px solid var(--border-color)',
@@ -28,8 +32,12 @@ export const OrderBook: React.FC = observer(() => {
         justifyContent: 'space-between',
         background: 'rgba(22, 26, 30, 0.4)'
       }}>
-        <span style={{ fontWeight: 600, fontSize: '14px' }}>Order Book</span>
-        <span style={{ fontSize: '11px', color: 'var(--color-text-muted)', fontWeight: 500 }}>Depth: 20</span>
+        <span style={{ fontWeight: 600, fontSize: '14px' }}>
+          {t.orderBookTitle || 'Order Book'}
+        </span>
+        <span style={{ fontSize: '11px', color: 'var(--color-text-muted)', fontWeight: 500 }}>
+          {t.depth || 'Depth'}: 20
+        </span>
       </div>
 
       <OrderBookHeader />
@@ -51,7 +59,7 @@ export const OrderBook: React.FC = observer(() => {
             ))
           ) : (
             <div style={{ textAlign: 'center', padding: '16px', color: 'var(--color-text-muted)', fontSize: '12px' }}>
-              Waiting for order book asks...
+              {t.waitingAsks || 'Waiting for order book asks...'}
             </div>
           )}
         </div>
@@ -74,7 +82,7 @@ export const OrderBook: React.FC = observer(() => {
             ))
           ) : (
             <div style={{ textAlign: 'center', padding: '16px', color: 'var(--color-text-muted)', fontSize: '12px' }}>
-              Waiting for order book bids...
+              {t.waitingBids || 'Waiting for order book bids...'}
             </div>
           )}
         </div>

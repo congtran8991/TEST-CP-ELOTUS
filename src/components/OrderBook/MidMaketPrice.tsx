@@ -1,10 +1,14 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import getStore from '../../store/store';
+import { dictionary } from '../../i18n';
 
 export const MidMarketPrice: React.FC = observer(() => {
   const store = getStore();
   const activeTicker = store.tickers.get(store.selectedSymbol);
+
+  // Đọc từ điển ngôn ngữ động ('en' hoặc 'vi') từ hệ thống i18n
+  const t = dictionary[store.currentLanguage];
 
   const formatPrice = (pStr: string | undefined) => {
     if (!pStr) return '--';
@@ -29,6 +33,7 @@ export const MidMarketPrice: React.FC = observer(() => {
       gap: '2px',
       zIndex: 10
     }}>
+      {/* Khối hiển thị Giá khớp lệnh gần nhất (Last Price / Mid-market Price) */}
       {activeTicker ? (
         <div className={`glow-text ${isPositive ? 'text-buy' : 'text-sell'}`} style={{
           fontSize: '18px',
@@ -45,8 +50,9 @@ export const MidMarketPrice: React.FC = observer(() => {
         <div style={{ fontSize: '14px', color: 'var(--color-text-secondary)', fontWeight: 600 }}>--</div>
       )}
 
+      {/* Khối hiển thị Khoảng chênh lệch (Spread) */}
       <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '11px', color: 'var(--color-text-secondary)' }}>
-        <span>Spread</span>
+        <span>{t.spread || 'Spread'}</span>
         <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, color: 'var(--color-text-primary)' }}>
           {store.orderBook.spread} ({store.orderBook.spreadPercent})
         </span>
