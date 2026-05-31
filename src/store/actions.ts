@@ -4,6 +4,8 @@ import type { TickerInfo, Language, KlineData, OrderBookItem } from '../constant
 
 export const changeLanguageAction = action('CHANGE_LANGUAGE', (lang: Language) => ({ lang }));
 
+export const toggleThemeAction = action('toggleTheme');
+
 export const initializeApplicationAction = action('INITIALIZE_APPLICATION');
 
 export const setActiveTabAction = action('SET_ACTIVE_TAB', (tab: 'USDT' | 'BTC' | 'ALL') => ({ tab }));

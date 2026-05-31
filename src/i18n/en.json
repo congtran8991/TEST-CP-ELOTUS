@@ -9,7 +9,7 @@
   "marketWs": "Market WS",
   "chartWs": "Chart WS",
   "loading": "Loading active market ticker...",
-  "interval": "Interval:",
+  "interval": "Interval",
   "volShort": "Vol",
   "searchPlaceholder": "Search markets...",
   "tabAll": "ALL",

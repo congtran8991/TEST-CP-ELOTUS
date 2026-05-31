@@ -1,10 +1,11 @@
 import { createStore } from 'satcheljs';
-import type { AppState, TickerInfo } from '../constants/types';
+import type { AppState, Theme, TickerInfo } from '../constants/types';
 
 
 // Initial State definition
 const initialState: AppState = {
   currentLanguage: 'vi',
+  theme: (localStorage.getItem('app-theme') as Theme) || 'dark',
   tickers: new Map<string, TickerInfo>(),
   selectedSymbol: 'BTCUSDT',
   selectedInterval: '15m',

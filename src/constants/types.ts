@@ -1,5 +1,7 @@
 export type Language = 'en' | 'vi';
 
+export type Theme = 'dark' | 'light';
+
 export interface TickerInfo {
   symbol: string;
   price: string;
@@ -31,6 +33,7 @@ export interface OrderBookItem {
 
 export interface AppState {
   currentLanguage: Language;
+  theme: Theme;
   tickers: Map<string, TickerInfo>;
   selectedSymbol: string;
   selectedInterval: string;

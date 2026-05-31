@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import React, { memo } from 'react';
 import { observer } from 'mobx-react';
 import getStore from '../../store/store';
 import { dictionary } from '../../i18n';
@@ -31,7 +31,7 @@ export const TickerRow = observer(({ symbol, active, onClick }: TickerRowProps) 
   // Hàm định dạng hiển thị giá tiền
   const formatPrice = (pStr: string) => {
     const p = parseFloat(pStr);
-    if (p >= 1) return p.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (p >= 1) return p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     if (p >= 0.01) return p.toFixed(4);
     return p.toFixed(6);
   };
@@ -42,39 +42,37 @@ export const TickerRow = observer(({ symbol, active, onClick }: TickerRowProps) 
   return (
     <div
       onClick={onClick}
-      className={`${flashClass}`}
+      // Thêm class 'active' nếu dòng này đang được chọn để ăn theo css hệ thống nếu cần, kết hợp hiệu ứng nhấp nháy
+      className={`ticker-row-item ${active ? 'active' : ''} ${flashClass}`}
       style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '10px 16px',
-        borderBottom: '1px solid rgba(43, 49, 57, 0.3)',
+        borderBottom: '1px solid var(--border-color)',
         cursor: 'pointer',
-        backgroundColor: active ? 'rgba(0, 180, 216, 0.08)' : 'transparent',
+        // THAY ĐỔI TẠI ĐÂY: Dùng màu nền accent mờ động theo hệ thống
+        backgroundColor: active ? 'var(--color-accent-glow)' : 'transparent',
         borderLeft: active ? '3px solid var(--color-accent)' : '3px solid transparent',
         transition: 'all 0.15s ease',
         userSelect: 'none'
       }}
-      onMouseEnter={(e) => {
-        if (!active) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.02)';
-      }}
-      onMouseLeave={(e) => {
-        if (!active) e.currentTarget.style.backgroundColor = 'transparent';
-      }}
     >
-      {/* Cột Tên Coin và Khối lượng (Khối lượng dùng chữ dịch động "Vol") */}
+      {/* Cột Tên Coin và Khối lượng */}
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <span style={{ fontWeight: 600, fontSize: '13.5px', color: active ? '#fff' : 'var(--color-text-primary)' }}>
+        {/* THAY ĐỔI TẠI ĐÂY: Bỏ màu #fff cứng để không bị tàng hình ở Light Theme */}
+        <span style={{ fontWeight: 600, fontSize: '13.5px', color: 'var(--color-text-primary)' }}>
           {displaySymbol}
         </span>
         <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)' }}>
-          {t.volShort || 'Vol'} {parseFloat(ticker.volume).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+          {t.volShort || 'Vol'} {parseFloat(ticker.volume).toLocaleString('en-US', { maximumFractionDigits: 0 })}
         </span>
       </div>
 
       {/* Cột Giá hiện tại và % Thay đổi */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontFamily: 'var(--font-mono)' }}>
-        <span style={{ fontSize: '13px', fontWeight: 600, color: '#fff' }}>
+        {/* THAY ĐỔI TẠI ĐÂY: Đưa màu chữ về biến hệ thống động */}
+        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
           {formatPrice(ticker.price)}
         </span>
         <span style={{ fontSize: '11px', fontWeight: 500, color: isPositive ? 'var(--color-buy)' : 'var(--color-sell)' }}>
@@ -85,4 +83,7 @@ export const TickerRow = observer(({ symbol, active, onClick }: TickerRowProps) 
   );
 });
 
-export default memo(TickerRow);
+// Xuất bản kết hợp bọc bộ đệm memo để tối ưu chống re-render flood từ cha
+export default memo(TickerRow, (prevProps, nextProps) => {
+  return prevProps.symbol === nextProps.symbol && prevProps.active === nextProps.active;
+});

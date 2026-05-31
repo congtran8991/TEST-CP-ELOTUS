@@ -1,5 +1,5 @@
 import { mutator } from 'satcheljs';
-import { changeLanguageAction, setActiveTabAction, setConnectionStatusAction, setHistoricalKlinesAction, setKlineConnectionStatusAction, setSearchQueryAction, setSelectedIntervalAction, setSelectedSymbolAction, setTickersAction, updateKlineAction, updateOrderBookAction, updateTickersAction } from './actions';
+import { changeLanguageAction, setActiveTabAction, setConnectionStatusAction, setHistoricalKlinesAction, setKlineConnectionStatusAction, setSearchQueryAction, setSelectedIntervalAction, setSelectedSymbolAction, setTickersAction, toggleThemeAction, updateKlineAction, updateOrderBookAction, updateTickersAction } from './actions';
 import { getStore } from './store';
 import type { TickerInfo } from '../constants/types';
 
@@ -171,3 +171,14 @@ mutator(setConnectionStatusAction, (actionMessage) => {
 mutator(setKlineConnectionStatusAction, (actionMessage) => {
   getStore().klineWsStatus = actionMessage.status;
 });
+
+mutator(toggleThemeAction, () => {
+  const store = getStore();
+  store.theme = store.theme === 'dark' ? 'light' : 'dark';
+
+  console.log(store.theme, "shvhsvhshvhs");
+
+  // Tùy chọn: Lưu vào localStorage để người dùng F5 không bị mất theme
+  localStorage.setItem('app-theme', store.theme);
+});
+

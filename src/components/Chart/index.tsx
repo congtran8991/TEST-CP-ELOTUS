@@ -3,6 +3,7 @@ import { observer } from 'mobx-react';
 import { createChart, CandlestickSeries, type IChartApi, type ISeriesApi, ColorType, type Time } from 'lightweight-charts';
 import getStore from '../../store/store';
 import ChartToolbar from './ToolBar';
+import { getCSSColor } from '../../utils/theme';
 
 export const Chart: React.FC = observer(() => {
   const store = getStore();
@@ -16,6 +17,7 @@ export const Chart: React.FC = observer(() => {
 
   // Lấy cây nến cuối cùng ra để tối ưu hóa mảng dependency
   const lastKline = store.klines[store.klines.length - 1];
+  const isLight = store.theme === 'light';
 
   // 1. Khởi tạo Chart và Xử lý co giãn thông minh (ResizeObserver)
   useEffect(() => {
@@ -72,6 +74,55 @@ export const Chart: React.FC = observer(() => {
       seriesRef.current = null;
     };
   }, []);
+
+  // ==========================================================================
+  // 2. CẬP NHẬT THEME ĐỘNG (Sửa lỗi lệch pha màu khi Swap)
+  // ==========================================================================
+  // ==========================================================================
+  // 2. CẬP NHẬT THEME ĐỘNG (Đã tối ưu hiệu năng & Sửa lỗi lệch pha màu)
+  // ==========================================================================
+  useEffect(() => {
+    if (!chartRef.current) return;
+
+    const currentTheme = store.theme; // 'dark' hoặc 'light'
+
+    // Bảng map màu sắc đồng bộ 100% với file index.css (Loại bỏ toán tử ba ngôi rườm rà)
+    const themeColors = {
+      dark: {
+        bg: '#080a0c',          // --bg-main
+        text: '#848e9c',        // --color-text-secondary
+        grid: 'rgba(43, 49, 57, 0.1)',
+        border: 'rgba(43, 49, 57, 0.6)', // --border-color
+        accent: '#00b4d8'       // --color-accent
+      },
+      light: {
+        bg: '#f8f9fa',
+        text: '#707a8a',
+        grid: 'rgba(0, 0, 0, 0.05)',
+        border: 'rgba(200, 204, 210, 0.6)',
+        accent: '#0077b6'
+      }
+    }[currentTheme];
+
+    // Thực hiện cập nhật cấu hình Canvas chỉ với 1 lượt chạy duy nhất
+    chartRef.current.applyOptions({
+      layout: {
+        background: { type: ColorType.Solid, color: themeColors.bg },
+        textColor: themeColors.text,
+      },
+      grid: {
+        vertLines: { color: themeColors.grid },
+        horzLines: { color: themeColors.grid },
+      },
+      crosshair: {
+        vertLine: { color: themeColors.accent, labelBackgroundColor: themeColors.accent },
+        horzLine: { color: themeColors.accent, labelBackgroundColor: themeColors.accent },
+      },
+      rightPriceScale: { borderColor: themeColors.border },
+      timeScale: { borderColor: themeColors.border },
+    });
+
+  }, [store.theme]); // Tối ưu: Chỉ lắng nghe duy nhất store.theme
 
   // 2. Lắng nghe và đồng bộ dữ liệu Real-time (Đã tối ưu mảng quan sát)
   useEffect(() => {

@@ -19,7 +19,8 @@ export const Toolbar: React.FC = observer(() => {
       justifyContent: 'space-between',
       padding: '12px 16px',
       borderBottom: '1px solid var(--border-color)',
-      background: 'rgba(22, 26, 30, 0.4)'
+      background: 'var(--bg-panel)',
+      transition: 'background 0.25s ease, border-color 0.25s ease'
     }}>
       {/* Khối chọn Khung thời gian (Interval) */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

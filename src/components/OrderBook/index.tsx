@@ -30,7 +30,8 @@ export const OrderBook: React.FC = observer(() => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        background: 'rgba(22, 26, 30, 0.4)'
+        background: 'var(--bg-panel)',
+        transition: 'background 0.25s ease, border-color 0.25s ease'
       }}>
         <span style={{ fontWeight: 600, fontSize: '14px' }}>
           {t.orderBookTitle || 'Order Book'}

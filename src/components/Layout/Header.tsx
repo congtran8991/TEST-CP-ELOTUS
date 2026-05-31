@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { changeLanguageAction, getStore } from '../../store';
+import { changeLanguageAction, getStore, toggleThemeAction } from '../../store';
 import { dictionary } from '../../i18n';
 
 
@@ -22,6 +22,7 @@ export const Header: React.FC = observer(() => {
 
   const isPositive = activeTicker ? parseFloat(activeTicker.priceChangePercent) >= 0 : true;
   const changePercent = activeTicker ? activeTicker.priceChangePercent : '0.00';
+
 
   return (
     <header className="header-area">
@@ -53,10 +54,19 @@ export const Header: React.FC = observer(() => {
       {activeTicker ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: '28px', flex: 1, marginLeft: '40px' }}>
           <div>
-            <div style={{ fontSize: '18px', fontWeight: 600, color: '#fff' }}>
+            {/* TỐI ƯU: Thay đổi #fff cứng thành biến var động để không bị tàng hình ở Light Theme */}
+            <div style={{
+              fontSize: '18px',
+              fontWeight: 600,
+              color: 'var(--color-text-primary)',
+              transition: 'color 0.25s ease' // Hiệu ứng chuyển màu chữ mượt mà khi đổi theme
+            }}>
               {activeTicker.symbol.replace(/(USDT|BTC|ETH)$/, '/$1')}
             </div>
-            <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>{t.binanceSpot}</div>
+
+            <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+              {t.binanceSpot}
+            </div>
           </div>
 
           <div>
@@ -104,37 +114,46 @@ export const Header: React.FC = observer(() => {
 
       {/* Connection Status Badges */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        {/* Ticker Stream Status */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.03)', padding: '6px 12px', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
-          <div style={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            backgroundColor:
-              store.wsStatus === 'connected' ? 'var(--color-buy)' :
-                store.wsStatus === 'connecting' ? '#ffb020' : 'var(--color-sell)',
-            boxShadow: store.wsStatus === 'connected' ? '0 0 8px var(--color-buy)' : 'none'
-          }} />
-          <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
-            Market WS: {store.wsStatus.toUpperCase()}
-          </span>
-        </div>
-
-        {/* Kline Stream Status */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.03)', padding: '6px 12px', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
-          <div style={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            backgroundColor:
-              store.klineWsStatus === 'connected' ? 'var(--color-buy)' :
-                store.klineWsStatus === 'connecting' ? '#ffb020' : 'var(--color-sell)',
-            boxShadow: store.klineWsStatus === 'connected' ? '0 0 8px var(--color-buy)' : 'none'
-          }} />
-          <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
-            Chart WS: {store.klineWsStatus.toUpperCase()}
-          </span>
-        </div>
+        {/* Định nghĩa mảng cấu hình dữ liệu đầu vào */}
+        {[
+          { label: 'Market WS', status: store.wsStatus },
+          { label: 'Chart WS', status: store.klineWsStatus }
+        ].map((ws, idx) => (
+          <div
+            key={`ws-badge-${idx}`}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: 'var(--bg-input)', // Tự động đổi màu nền theo Theme
+              padding: '6px 12px',
+              borderRadius: '20px',
+              border: '1px solid var(--border-color)',
+              transition: 'background 0.25s ease, border-color 0.25s ease'
+            }}
+          >
+            {/* Chấm tròn trạng thái */}
+            <div
+              className={ws.status === 'connecting' ? 'ws-connecting-pulse' : ''}
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                backgroundColor:
+                  ws.status === 'connected' ? 'var(--color-buy)' :
+                    ws.status === 'connecting' ? 'var(--color-warning)' : 'var(--color-sell)',
+                boxShadow:
+                  ws.status === 'connected' ? '0 0 8px var(--color-buy)' :
+                    ws.status === 'connecting' ? '0 0 8px var(--color-warning)' : 'none',
+                transition: 'all 0.25s ease'
+              }}
+            />
+            {/* Nhãn chữ */}
+            <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
+              {ws.label}: {ws.status.toUpperCase()}
+            </span>
+          </div>
+        ))}
       </div>
 
 
@@ -143,12 +162,15 @@ export const Header: React.FC = observer(() => {
       <div style={{
         display: 'flex',
         gap: '4px',
-        background: 'rgba(255, 255, 255, 0.05)',
+        // TỐI ƯU: Sử dụng màu nền input động (Đen mờ ở Dark, Xám dịu ở Light)
+        background: 'var(--bg-input)',
         padding: '3px',
         borderRadius: '6px',
-        border: '1px solid rgba(255, 255, 255, 0.05)',
+        border: '1px solid var(--border-color)',
         marginLeft: '16px',
+        transition: 'all 0.25s ease'
       }}>
+        {/* Nút Ngôn ngữ Tiếng Việt (VI) */}
         <button
           onClick={() => changeLanguageAction('vi')}
           style={{
@@ -157,8 +179,10 @@ export const Header: React.FC = observer(() => {
             border: 'none',
             borderRadius: '4px',
             cursor: 'pointer',
-            background: store.currentLanguage === 'vi' ? '#02c076' : 'transparent',
-            color: store.currentLanguage === 'vi' ? '#000' : '#848e9c',
+            // TỐI ƯU: Sử dụng màu Buy hệ thống (Tự cân bằng độ tương phản theo từng Theme)
+            background: store.currentLanguage === 'vi' ? 'var(--color-buy)' : 'transparent',
+            // TỐI ƯU: Khi active, chữ sẽ đổi màu theo nền chính của từng theme để dễ đọc nhất
+            color: store.currentLanguage === 'vi' ? 'var(--bg-main)' : 'var(--color-text-secondary)',
             fontWeight: store.currentLanguage === 'vi' ? 700 : 500,
             transition: 'all 0.2s ease'
           }}
@@ -166,6 +190,7 @@ export const Header: React.FC = observer(() => {
           VI
         </button>
 
+        {/* Nút Ngôn ngữ Tiếng Anh (EN) */}
         <button
           onClick={() => changeLanguageAction('en')}
           style={{
@@ -174,14 +199,23 @@ export const Header: React.FC = observer(() => {
             border: 'none',
             borderRadius: '4px',
             cursor: 'pointer',
-            background: store.currentLanguage === 'en' ? '#02c076' : 'transparent',
-            color: store.currentLanguage === 'en' ? '#000' : '#848e9c',
+            background: store.currentLanguage === 'en' ? 'var(--color-buy)' : 'transparent',
+            color: store.currentLanguage === 'en' ? 'var(--bg-main)' : 'var(--color-text-secondary)',
             fontWeight: store.currentLanguage === 'en' ? 700 : 500,
             transition: 'all 0.2s ease'
           }}
         >
           EN
         </button>
+      </div>
+
+      <div>
+        <div
+          onClick={() => toggleThemeAction()}
+          style={{ fontSize: '16px', cursor: 'pointer', marginLeft: '16px', padding: '4px 8px' }}
+        >
+          {store.theme === 'dark' ? '☀️' : '🌙'}
+        </div>
       </div>
 
     </header>
