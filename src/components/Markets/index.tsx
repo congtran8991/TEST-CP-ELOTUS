@@ -3,9 +3,12 @@ import { observer } from 'mobx-react';
 import TickerRow from './TickerRow'; // Sửa lại chữ TicketRow thành TickerRow cho đúng tên file bạn vừa tạo
 import { setSearchQueryAction, setActiveTabAction, getStore, setSelectedSymbolAction } from '../../store';
 import { dictionary } from '../../i18n';
+import { useSearchDebounce } from '../../hooks/useSearchDebounce'; // 1. Import hook mới
 
 export const Markets: React.FC = observer(() => {
   const store = getStore();
+
+  const [searchVal, setSearchVal] = useSearchDebounce(store.searchQuery, setSearchQueryAction, 300);
 
   // Đọc từ điển ngôn ngữ động ('en' hoặc 'vi') từ tệp JSON
   const t = dictionary[store.currentLanguage];
@@ -40,8 +43,8 @@ export const Markets: React.FC = observer(() => {
             type="text"
             className="custom-input"
             placeholder={t.searchPlaceholder || "Search markets..."}
-            value={store.searchQuery}
-            onChange={(e) => setSearchQueryAction(e.target.value)}
+            value={searchVal} // Gắn trực tiếp biến từ hook trả về
+            onChange={(e) => setSearchVal(e.target.value)} // Gắn trực tiếp hàm từ hook trả về
             style={{ width: '100%', paddingLeft: '12px' }}
           />
         </div>
