@@ -14,8 +14,6 @@ let tickerIntervalId: number | any = null;
 let depthBuffer: { bids: OrderBookItem[]; asks: OrderBookItem[] } | null = null;
 let depthIntervalId: number | any = null;
 
-let currentStreamId: number = 0;
-
 function stopTickerStream() {
   if (tickerWs) {
     tickerWs.close();
@@ -120,34 +118,17 @@ function stopKlineStream() {
 function startKlineStream(symbol: string, interval: string) {
   stopKlineStream();
 
-  // 2. Tăng ID phiên bản để đánh dấu luồng mới nhất
-  currentStreamId++;
-  const localStreamId = currentStreamId; // Tạo bản sao cục bộ cho riêng hàm này sử dụng
-
   setKlineConnectionStatusAction('connecting');
 
   const streamName = `${symbol.toLowerCase()}@kline_${interval}`;
   klineWs = new WebSocket(`${WS_BASE}/${streamName}`);
 
   klineWs.onopen = () => {
-    if (localStreamId !== currentStreamId) return;
-
     setKlineConnectionStatusAction('connected');
     console.log(`[WS] Kline stream active for ${symbol} @ ${interval}`);
   };
 
   klineWs.onmessage = (event) => {
-    // 3. KIỂM TRA VỆ SĨ: Gói tin đến, so sánh ID. Nếu ID cũ -> Vứt ngay lập tức
-    // if (localStreamId !== currentStreamId) {
-    if (klineWs && klineWs.readyState === WebSocket.OPEN) {
-      try {
-        klineWs.close();
-      } catch (err) {
-        console.error('[WS] Không thể ép đóng luồng ma:', err);
-      }
-      return;
-    }
-
     try {
       setKlineConnectionStatusAction('connected');
       const data = JSON.parse(event.data);
@@ -174,17 +155,8 @@ function startKlineStream(symbol: string, interval: string) {
   };
 
   klineWs.onclose = () => {
-    if (localStreamId === currentStreamId) {
-      setKlineConnectionStatusAction('disconnected');
-      console.log(`[WS] Kline stream closed for ${symbol}`);
-    }
+    setKlineConnectionStatusAction('disconnected');
     console.log(`[WS] Kline stream closed for ${symbol}`);
-  };
-
-  klineWs.onerror = () => {
-    if (localStreamId === currentStreamId) {
-      setKlineConnectionStatusAction('disconnected');
-    }
   };
 }
 
