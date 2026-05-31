@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { observer } from 'mobx-react';
-import TickerRow from './TicketRow'; // Sửa lại chữ TicketRow thành TickerRow cho đúng tên file bạn vừa tạo
+import TickerRow from './TickerRow'; // Sửa lại chữ TicketRow thành TickerRow cho đúng tên file bạn vừa tạo
 import { setSearchQueryAction, setActiveTabAction, getStore, setSelectedSymbolAction } from '../../store';
 import { dictionary } from '../../i18n';
 
