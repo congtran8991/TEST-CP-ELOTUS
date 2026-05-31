@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from 'react';
 import { observer } from 'mobx-react';
 import getStore from '../../store/store';
 import { dictionary } from '../../i18n';
@@ -85,4 +85,4 @@ export const TickerRow = observer(({ symbol, active, onClick }: TickerRowProps) 
   );
 });
 
-export default TickerRow;
+export default memo(TickerRow);
