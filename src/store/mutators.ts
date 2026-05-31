@@ -1,5 +1,5 @@
 import { mutator } from 'satcheljs';
-import { changeLanguageAction, setActiveTabAction, setConnectionStatusAction, setHistoricalKlinesAction, setSearchQueryAction, setSelectedIntervalAction, setSelectedSymbolAction, setTickersAction, updateKlineAction, updateOrderBookAction, updateTickersAction } from './actions';
+import { changeLanguageAction, setActiveTabAction, setConnectionStatusAction, setHistoricalKlinesAction, setKlineConnectionStatusAction, setSearchQueryAction, setSelectedIntervalAction, setSelectedSymbolAction, setTickersAction, updateKlineAction, updateOrderBookAction, updateTickersAction } from './actions';
 import { getStore } from './store';
 import type { TickerInfo } from '../constants/types';
 
@@ -166,4 +166,8 @@ mutator(updateOrderBookAction, (actionMessage) => {
 
 mutator(setConnectionStatusAction, (actionMessage) => {
   getStore().wsStatus = actionMessage.status;
+});
+
+mutator(setKlineConnectionStatusAction, (actionMessage) => {
+  getStore().klineWsStatus = actionMessage.status;
 });
