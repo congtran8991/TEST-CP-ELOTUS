@@ -12,7 +12,7 @@ export const OrderBook: React.FC = observer(() => {
   // Đọc từ điển ngôn ngữ động ('en' hoặc 'vi') từ hệ thống i18n
   const t = dictionary[store.currentLanguage];
 
-  const displayLimit = 10;
+  const displayLimit = 16;
   const slicedBids = store.orderBook.bids.slice(0, displayLimit);
   const slicedAsks = store.orderBook.asks.slice(0, displayLimit);
   const reversedAsks = [...slicedAsks].reverse();
