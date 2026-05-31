@@ -14,6 +14,8 @@ let tickerIntervalId: number | any = null;
 let depthBuffer: { bids: OrderBookItem[]; asks: OrderBookItem[] } | null = null;
 let depthIntervalId: number | any = null;
 
+let currentStreamId: number = 0;
+
 function stopTickerStream() {
   if (tickerWs) {
     tickerWs.close();
@@ -101,26 +103,53 @@ function startTickerStream() {
 
 function stopKlineStream() {
   if (klineWs) {
-    klineWs.close();
+    klineWs.onopen = null;
+    klineWs.onmessage = null;
+    klineWs.onclose = null;
+    klineWs.onerror = null;
+
+    try {
+      klineWs.close();
+    } catch (e) {
+      console.error('[WS] Lỗi khi đóng luồng nến cũ:', e);
+    }
     klineWs = null;
   }
-  setKlineConnectionStatusAction('disconnected');
 }
 
 function startKlineStream(symbol: string, interval: string) {
   stopKlineStream();
+
+  // 2. Tăng ID phiên bản để đánh dấu luồng mới nhất
+  currentStreamId++;
+  const localStreamId = currentStreamId; // Tạo bản sao cục bộ cho riêng hàm này sử dụng
+
   setKlineConnectionStatusAction('connecting');
 
   const streamName = `${symbol.toLowerCase()}@kline_${interval}`;
   klineWs = new WebSocket(`${WS_BASE}/${streamName}`);
 
   klineWs.onopen = () => {
+    if (localStreamId !== currentStreamId) return;
+
     setKlineConnectionStatusAction('connected');
     console.log(`[WS] Kline stream active for ${symbol} @ ${interval}`);
   };
 
   klineWs.onmessage = (event) => {
+    // 3. KIỂM TRA VỆ SĨ: Gói tin đến, so sánh ID. Nếu ID cũ -> Vứt ngay lập tức
+    // if (localStreamId !== currentStreamId) {
+    if (klineWs && klineWs.readyState === WebSocket.OPEN) {
+      try {
+        klineWs.close();
+      } catch (err) {
+        console.error('[WS] Không thể ép đóng luồng ma:', err);
+      }
+      return;
+    }
+
     try {
+      setKlineConnectionStatusAction('connected');
       const data = JSON.parse(event.data);
 
       if (!data || !data.k) return;
@@ -145,20 +174,47 @@ function startKlineStream(symbol: string, interval: string) {
   };
 
   klineWs.onclose = () => {
-    setKlineConnectionStatusAction('disconnected');
+    if (localStreamId === currentStreamId) {
+      setKlineConnectionStatusAction('disconnected');
+      console.log(`[WS] Kline stream closed for ${symbol}`);
+    }
     console.log(`[WS] Kline stream closed for ${symbol}`);
+  };
+
+  klineWs.onerror = () => {
+    if (localStreamId === currentStreamId) {
+      setKlineConnectionStatusAction('disconnected');
+    }
   };
 }
 
 function stopDepthStream() {
   if (depthWs) {
-    depthWs.close();
+    // 1. CẮT ĐỨT SỢI XÍCH LIÊN KẾT: Ép các callback sự kiện về null
+    // Chặn đứng hoàn toàn gói tin rác chạy lạc đè lên State luồng mới
+    depthWs.onopen = null;
+    depthWs.onmessage = null;
+    depthWs.onclose = null;
+    depthWs.onerror = null;
+
+    try {
+      // 2. Ra lệnh đóng kết nối vật lý với Binance
+      depthWs.close();
+    } catch (error) {
+      console.error('[WS Depth] Lỗi khi close socket depth:', error);
+    }
+
+    // 3. Xóa con trỏ ở Stack, biến thực thể ở Heap thành "ốc đảo cô lập" để GC quét sạch
     depthWs = null;
   }
+
+  // 4. Dọn dẹp bộ đếm khoảng thời gian (Throttling/Interval) nếu có
   if (depthIntervalId) {
     clearInterval(depthIntervalId);
     depthIntervalId = null;
   }
+
+  // 5. Giải phóng mảng lưu trữ bộ đệm tránh phình đại bộ nhớ (Memory Leak)
   depthBuffer = null;
 }
 
