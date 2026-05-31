@@ -6,8 +6,6 @@ import { setSearchQueryAction, setActiveTabAction, getStore, setSelectedSymbolAc
 export const Markets: React.FC = observer(() => {
   const store = getStore();
 
-  console.log(store.tickers, "store123")
-
   // Memoize filtering for performance
   const filteredSymbols = useMemo(() => {
     const list: string[] = [];

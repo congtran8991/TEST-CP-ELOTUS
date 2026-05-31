@@ -8,6 +8,13 @@ const initialState: AppState = {
   tickers: new Map<string, TickerInfo>(),
   selectedSymbol: 'BTCUSDT',
   selectedInterval: '15m',
+  klines: [],
+  orderBook: {
+    bids: [],
+    asks: [],
+    spread: '0.00',
+    spreadPercent: '0.00%'
+  },
   searchQuery: '',
   activeTab: 'USDT',
   wsStatus: 'disconnected',

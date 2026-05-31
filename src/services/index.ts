@@ -1,4 +1,4 @@
-import type { TickerInfo } from "../constants/types";
+import type { KlineData, TickerInfo } from "../constants/types";
 
 
 const REST_BASE = 'https://api.binance.com/api/v3';
@@ -11,8 +11,6 @@ export async function fetchInitialTickers(): Promise<TickerInfo[]> {
     console.log('[REST] 24h ticker info response', response);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
-
-    console.log(data, "data_24h")
 
     return data
       .filter((t: any) => t.symbol.endsWith('USDT') || t.symbol.endsWith('BTC') || t.symbol.endsWith('ETH'))
@@ -34,6 +32,27 @@ export async function fetchInitialTickers(): Promise<TickerInfo[]> {
       });
   } catch (err) {
     console.error('[REST] Failed to fetch initial ticker info', err);
+    return [];
+  }
+}
+
+export async function fetchHistoricalKlines(symbol: string, interval: string): Promise<KlineData[]> {
+  try {
+    const url = `${REST_BASE}/klines?symbol=${symbol}&interval=${interval}&limit=500`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const data = await response.ok ? await response.json() : [];
+
+    return data.map((k: any) => ({
+      time: k[0] / 1000, // Convert to seconds
+      open: parseFloat(k[1]),
+      high: parseFloat(k[2]),
+      low: parseFloat(k[3]),
+      close: parseFloat(k[4]),
+      volume: parseFloat(k[5])
+    }));
+  } catch (err) {
+    console.error(`[REST] Failed to fetch klines for ${symbol}`, err);
     return [];
   }
 }
