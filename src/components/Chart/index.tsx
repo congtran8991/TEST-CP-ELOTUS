@@ -3,7 +3,6 @@ import { observer } from 'mobx-react';
 import { createChart, CandlestickSeries, type IChartApi, type ISeriesApi, ColorType, type Time } from 'lightweight-charts';
 import getStore from '../../store/store';
 import ChartToolbar from './ToolBar';
-import { getCSSColor } from '../../utils/theme';
 
 export const Chart: React.FC = observer(() => {
   const store = getStore();
@@ -17,7 +16,6 @@ export const Chart: React.FC = observer(() => {
 
   // Lấy cây nến cuối cùng ra để tối ưu hóa mảng dependency
   const lastKline = store.klines[store.klines.length - 1];
-  const isLight = store.theme === 'light';
 
   // 1. Khởi tạo Chart và Xử lý co giãn thông minh (ResizeObserver)
   useEffect(() => {
