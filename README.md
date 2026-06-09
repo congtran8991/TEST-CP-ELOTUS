@@ -176,3 +176,8 @@ The UI supports **English** and **Vietnamese**. Language is stored in the MobX s
 | Lightweight Charts v5 | High-performance candlestick charting |
 | Vite | Development server & production bundler |
 | Binance Public API | REST & WebSocket market data |
+
+
+## Link Deloy
+
+[https://demo-tradingview.netlify.app/]
