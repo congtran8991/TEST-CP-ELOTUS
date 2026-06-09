@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { observer } from 'mobx-react';
 import getStore from '../../store/store';
 import { dictionary } from '../../i18n';
